@@ -1,7 +1,6 @@
 # Connect to ScyllaDB container
 docker exec -it scylla cqlsh
 
-# Then paste the schema we defined earlier:
 CREATE KEYSPACE IF NOT EXISTS twitter_clone 
 WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};
 
