@@ -1,11 +1,12 @@
 # Scylladb needs to be running as a separate container
-# docker run --name scylla -d -p 9042:9042 scylladb/scylla
+# docker volume create scylla_data
+# docker run --name scylla -d -p 9042:9042 -v scylla_data:/var/lib/scylla scylladb/scylla
 
 # Connect to ScyllaDB container
 docker exec -it scylla cqlsh
 
 CREATE KEYSPACE IF NOT EXISTS twitter_clone 
-WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};
+WITH replication = {'class': 'NetworkTopologyStrategy', 'datacenter1': 3};
 
 CREATE TABLE IF NOT EXISTS twitter_clone.users (
     user_id uuid PRIMARY KEY,
