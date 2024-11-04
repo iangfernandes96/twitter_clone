@@ -1,3 +1,6 @@
+# Scylladb needs to be running as a separate container
+# docker run --name scylla -d -p 9042:9042 scylladb/scylla
+
 # Connect to ScyllaDB container
 docker exec -it scylla cqlsh
 
