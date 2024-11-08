@@ -4,7 +4,7 @@ services:
   scylla-node1:
     image: scylladb/scylla
     container_name: scylla-node1
-    command: --seeds=scylla-node1,scylla-node2 --smp 1 --memory 750M --overprovisioned 1 --api-address 0.0.0.0
+    command: --seeds=scylla-node1,scylla-node2 --smp 2 --memory 4G --overprovisioned 1 --api-address 0.0.0.0
     ports:
       - "9042:9042" # CQL port for the first node
     volumes:
