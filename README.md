@@ -10,6 +10,7 @@ A Rust-based Twitter clone API using Actix-web and ScyllaDB, designed to demonst
 - Three-node ScyllaDB cluster for high availability
 - Data seeding capabilities
 - Load testing suite
+- Grafana + Prometheus Monitoring
 
 ## Prerequisites
 
@@ -76,12 +77,15 @@ Install k6:
 brew install k6
 ```
 
-Then run the load test:
+### 6. Monitoring
+
+After running 
 
 ```bash
-k6 run --out json=test_results.json load_test.js
+docker-compose up --build
 ```
 
+Navigate to http://localhost:3000
 
 ## API Endpoints
 
