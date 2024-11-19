@@ -65,7 +65,7 @@ async fn main() -> std::io::Result<()> {
         .expect("Failed to created db pool");
     info!("Connected to ScyllaDB");
 
-    let num_workers = num_cpus::get().max(4);
+    let num_workers = num_cpus::get().max(4) * 2;
     info!(
         "Starting Twitter clone backend with {} workers...",
         num_workers
@@ -100,9 +100,10 @@ async fn main() -> std::io::Result<()> {
             )
     })
     .workers(num_workers)
-    .max_connections(1024)
-    .max_connection_rate(256)
-    .backlog(1024)
+    .keep_alive(std::time::Duration::from_secs(75))
+    .max_connections(50_000)
+    .max_connection_rate(20_000)
+    .backlog(2048)
     .bind("0.0.0.0:8080")?
     .run()
     .await
