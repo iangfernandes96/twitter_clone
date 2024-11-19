@@ -6,7 +6,6 @@ use actix_web::{web, App, HttpServer};
 use env_logger::Builder;
 
 use log::{info, LevelFilter};
-use scylla::transport::session;
 use std::sync::Arc;
 
 #[actix_web::main]
