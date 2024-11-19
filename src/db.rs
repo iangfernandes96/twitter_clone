@@ -14,7 +14,7 @@ pub async fn create_session() -> Result<Session, Box<dyn Error>> {
 }
 
 pub async fn create_connection_pool() -> Result<Arc<Mutex<Vec<Session>>>, Box<dyn Error>> {
-    let session_futures = (0..num_cpus::get() * 4)
+    let session_futures = (0..num_cpus::get() * 8)
         .map(|_| async {
             SessionBuilder::new()
                 .known_node("127.0.0.1:9042")

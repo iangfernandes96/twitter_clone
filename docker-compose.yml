@@ -7,6 +7,7 @@ services:
     command: --seeds=scylla-node1,scylla-node2 --smp 2 --memory 4G --overprovisioned 1 --api-address 0.0.0.0
     ports:
       - "9042:9042" # CQL port for the first node
+      - "9180:9180" # prometheus
     volumes:
       - scylla_data1:/var/lib/scylla
     restart: unless-stopped
@@ -36,6 +37,28 @@ services:
     restart: unless-stopped
     networks:
       - scylla-network
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - scylla-network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    networks:
+      - scylla-network
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
 
 networks:
   scylla-network:
