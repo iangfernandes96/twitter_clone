@@ -2,7 +2,7 @@ use bcrypt::{hash, DEFAULT_COST};
 use chrono::Utc;
 use fake::faker::internet::en::{SafeEmail, Username};
 use fake::faker::lorem::en::Sentence;
-use fake::{Fake, Faker};
+use fake::Fake;
 use scylla::{frame::value::CqlTimestamp, Session, SessionBuilder};
 use std::error::Error;
 use uuid::Uuid;
@@ -18,8 +18,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .await?;
 
     // Configuration
-    let num_users = 100;
-    let tweets_per_user = 20;
+    let num_users = 10000000;
+    let tweets_per_user = 600;
 
     let users = seed_users(&session, num_users).await?;
     seed_tweets(&session, &users, tweets_per_user).await?;
