@@ -10,6 +10,8 @@ services:
       - "9180:9180" # prometheus
     volumes:
       - scylla_data1:/var/lib/scylla
+    environment:
+      - SCYLLA_TARGET_ARCH=arm64
     restart: unless-stopped
     networks:
       - scylla-network
@@ -17,7 +19,7 @@ services:
   scylla-node2:
     image: scylladb/scylla
     container_name: scylla-node2
-    command: --seeds=scylla-node1,scylla-node2 --smp 1 --memory 750M --overprovisioned 1 --api-address 0.0.0.0
+    command: --seeds=scylla-node1,scylla-node2 --smp 1 --memory 2G --overprovisioned 1 --api-address 0.0.0.0
     volumes:
       - scylla_data2:/var/lib/scylla
     depends_on:
@@ -29,7 +31,7 @@ services:
   scylla-node3:
     image: scylladb/scylla
     container_name: scylla-node3
-    command: --seeds=scylla-node1,scylla-node2 --smp 1 --memory 750M --overprovisioned 1 --api-address 0.0.0.0
+    command: --seeds=scylla-node1,scylla-node2 --smp 1 --memory 2G --overprovisioned 1 --api-address 0.0.0.0
     volumes:
       - scylla_data3:/var/lib/scylla
     depends_on:

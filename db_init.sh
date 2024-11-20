@@ -20,12 +20,22 @@ CREATE TABLE IF NOT EXISTS twitter_clone.users (
 CREATE INDEX IF NOT EXISTS users_username_idx ON twitter_clone.users (username);
 CREATE INDEX IF NOT EXISTS users_email_idx ON twitter_clone.users (email);
 
+# CREATE MATERIALIZED VIEW IF NOT EXISTS twitter_clone.users_by_username AS
+# SELECT * FROM twitter_clone.users
+# WHERE username IS NOT NULL
+# PRIMARY KEY (username, user_id);
+
+# CREATE MATERIALIZED VIEW IF NOT EXISTS twitter_clone.users_by_email AS
+# SELECT * FROM twitter_clone.users
+# WHERE email IS NOT NULL
+# PRIMARY KEY (email, user_id);
+
 CREATE TABLE IF NOT EXISTS twitter_clone.tweets (
     tweet_id uuid,
     user_id uuid,
     content text,
     created_at timestamp,
-    PRIMARY KEY (tweet_id)
+    PRIMARY KEY ((user_id), tweet_id)
 );
 
 CREATE TABLE IF NOT EXISTS twitter_clone.user_timeline (

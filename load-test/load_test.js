@@ -17,10 +17,10 @@ const getFeedTrend = new Trend('get_feed_duration');
 
 export const options = {
     stages: [
-        { duration: '1s', target: 5 },   // Ramp up to 5 users
-        { duration: '10s', target: 5 },    // Stay at 5 users
-        { duration: '2s', target: 10 },  // Ramp up to 10 users
-        { duration: '10s', target: 10 },   // Stay at 10 users
+        { duration: '100s', target: 500 },   // Ramp up to 50 users
+        { duration: '200s', target: 500 },    // Stay at 5 users
+        { duration: '500s', target: 1_000 },  // Ramp up to 10 users
+        { duration: '500s', target: 2_000 },   // Stay at 10 users
         { duration: '3s', target: 0 },   // Ramp down
     ],
     thresholds: {

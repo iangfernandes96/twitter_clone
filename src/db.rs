@@ -1,29 +1,62 @@
-use futures::future::try_join_all;
+use bb8::{ManageConnection, Pool};
 use scylla::{Session, SessionBuilder};
 use std::error::Error;
 use std::sync::Arc;
-use tokio::sync::Mutex;
+type DbPool = Pool<ScyllaConnectionManager>;
+use async_trait::async_trait;
 
-pub async fn create_session() -> Result<Session, Box<dyn Error>> {
-    let session = SessionBuilder::new()
-        .known_node("127.0.0.1:9042")
-        .build()
-        .await?;
+// pub async fn create_session() -> Result<Session, Box<dyn Error>> {
+//     let session = SessionBuilder::new()
+//         .known_node("127.0.0.1:9042")
+//         .build()
+//         .await?;
 
-    Ok(session)
+//     Ok(session)
+// }
+
+pub struct ScyllaConnectionManager {
+    connection_string: String,
 }
 
-pub async fn create_connection_pool() -> Result<Arc<Mutex<Vec<Session>>>, Box<dyn Error>> {
-    let session_futures = (0..num_cpus::get() * 8)
-        .map(|_| async {
-            SessionBuilder::new()
-                .known_node("127.0.0.1:9042")
-                .build()
-                .await
-        })
-        .collect::<Vec<_>>();
+impl ScyllaConnectionManager {
+    pub fn new(connection_string: impl Into<String>) -> Self {
+        Self {
+            connection_string: connection_string.into(),
+        }
+    }
+}
 
-    let pool = try_join_all(session_futures).await?;
+#[async_trait]
+impl ManageConnection for ScyllaConnectionManager {
+    type Connection = Arc<Session>;
+    type Error = scylla::transport::errors::NewSessionError;
 
-    Ok(Arc::new(Mutex::new(pool)))
+    async fn connect(&self) -> Result<Self::Connection, Self::Error> {
+        let session = SessionBuilder::new()
+            .known_node(&self.connection_string)
+            .build()
+            .await?;
+        Ok(Arc::new(session))
+    }
+
+    async fn is_valid(&self, conn: &mut Self::Connection) -> Result<(), Self::Error> {
+        conn.query("SELECT release_version FROM system.local", &[])
+            .await
+            .map(|_| ())
+            .map_err(|e| Self::Error::from(e))
+    }
+
+    fn has_broken(&self, _: &mut Self::Connection) -> bool {
+        false
+    }
+}
+
+pub async fn create_connection_pool() -> Result<DbPool, Box<dyn Error>> {
+    let manager = ScyllaConnectionManager::new("127.0.0.1:9042");
+    let pool = Pool::builder()
+        .max_size(30) // Number of connections
+        .build(manager)
+        .await
+        .expect("Failed to create pool");
+    Ok(pool)
 }
